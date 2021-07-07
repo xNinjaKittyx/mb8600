@@ -34,7 +34,7 @@ Assuming you ran the basic script already
 poetry run python data_export.py --host [influxdbhost] --db modem-test
 ```
 
-There are more parameters 
+There are more parameters
 ```
 ❯ poetry run python data_export.py --help
 usage: data_export.py [-h] --host HOST [--port PORT] [--user USER] [--pw PW] [--db DB] [--fresh] [--sleep SLEEP] --mhost MHOST [--muser MUSER] [--mpw MPW]
@@ -60,10 +60,10 @@ docker build -t influx-modem .
 docker run -it -e INFLUX_HOST="192.168.1.100" influx-modem
 
 # If you want to store the logs
-docker run -it -e INFLUX_HOST="192.168.1.100" -v PATH_TO_LOGS_ON_HOST:/logs influx-modem 
+docker run -it -e INFLUX_HOST="192.168.1.100" -v PATH_TO_LOGS_ON_HOST:/logs influx-modem
 ```
 
-### Rebooting the modem 
+### Rebooting the modem
 ```
 # If not using docker
 poetry run python reboot.py

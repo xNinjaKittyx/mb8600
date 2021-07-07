@@ -32,7 +32,7 @@ GET_ACTIONS = [
 class MB8600:
 
     def __init__(self, host: str, username: Optional[str] = None, password: Optional[str] = None, secure: bool = True, verify: bool = False):
-        
+
         self.host = host
         self.username = username
         self.password = password
@@ -43,7 +43,7 @@ class MB8600:
 
     def _millis(self):
         return int(round(time.time() * 1000)) % 2000000000000
-        
+
     def _md5sum(self, key, data):
         hmc = hmac.new(key.encode("utf-8"), digestmod=hashlib.md5)
         hmc.update(data.encode("utf-8"))
@@ -68,13 +68,13 @@ class MB8600:
         )
 
         try:
-            response = json.loads(response.content.strip())
+            result = response.json()
         except json.JSONDecodeError:
             log.exception(response.content)
             raise
 
-        return response[f"{action}Response"]
-    
+        return result[f"{action}Response"]
+
     def login(self, username: Optional[str] = None, password: Optional[str] = None) -> bool:
         username = username or self.username
         password = password or self.password
@@ -117,7 +117,7 @@ class MB8600:
         data = self.get_data()
 
         influxdb_data = []
-        
+
         tags = ['Channel', 'ChannelID']
 
         for value in data['GetMotoStatusDownstreamChannelInfoResponse']['MotoConnDownstreamChannel']:
@@ -159,9 +159,9 @@ class MB8600:
                 },
                 "time": datetime.now().isoformat(),
                 "fields": {
-                    **data['GetMotoStatusSoftwareResponse'], 
-                    **data['GetHomeConnectionResponse'], 
-                    **data['GetHomeAddressResponse'], 
+                    **data['GetMotoStatusSoftwareResponse'],
+                    **data['GetHomeConnectionResponse'],
+                    **data['GetHomeAddressResponse'],
                     **data['GetMotoLagStatusResponse'],
                     **data['GetMotoStatusConnectionInfoResponse'],
                     **data['GetMotoStatusStartupSequenceResponse'],
@@ -200,7 +200,7 @@ class MB8600:
 
         data['GetMotoStatusDownstreamChannelInfoResponse']['MotoConnDownstreamChannel'] = data['GetMotoStatusDownstreamChannelInfoResponse']['MotoConnDownstreamChannel'].split('|+|')
         data['GetMotoStatusUpstreamChannelInfoResponse']['MotoConnUpstreamChannel'] = data['GetMotoStatusUpstreamChannelInfoResponse']['MotoConnUpstreamChannel'].split('|+|')
-        
+
         for i, value in enumerate(data['GetMotoStatusDownstreamChannelInfoResponse']['MotoConnDownstreamChannel']):
             new_value = value.split('^')
             data['GetMotoStatusDownstreamChannelInfoResponse']['MotoConnDownstreamChannel'][i] = {
@@ -214,7 +214,7 @@ class MB8600:
                 "Corrected": int(new_value[7].strip()),
                 "Uncorrected": int(new_value[8].strip()),
             }
-        
+
         for i, value in enumerate(data['GetMotoStatusUpstreamChannelInfoResponse']['MotoConnUpstreamChannel']):
             new_value = value.split('^')
             data['GetMotoStatusUpstreamChannelInfoResponse']['MotoConnUpstreamChannel'][i] = {
@@ -237,15 +237,15 @@ class MB8600:
                 "MotoStatusSecXXX": "XXX",
             },
         )
-        
+
         return response
-    
+
     def _check_username_and_password(self, value: str) -> bool:
         """
 function CheckUsernameAndPassword(value)
 {
     var temp = new RegExp("^[A-Za-z0-9]+$");
-	
+
     if (((value.length!=0) && (!temp.test(value))) || (value.length==0))
     {
         return false;
@@ -265,7 +265,7 @@ function CheckUsernameAndPassword(value)
 
     def change_credentials(self, username: str, password: str, new_username: str, new_password: str) -> dict:
         # Please be careful using this command - Can only be used after Login
-        
+
         response = self._run_hnap_command(
             "SetStatusSecuritySettings",
             {

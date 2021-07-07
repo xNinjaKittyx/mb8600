@@ -15,4 +15,3 @@ if __name__ == "__main__":
     )
     print(my_modem.login())
     print(json.dumps(my_modem.get_data(), indent=2))
-    print(my_modem.reboot())

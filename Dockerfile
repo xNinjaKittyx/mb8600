@@ -16,7 +16,7 @@ RUN mkdir -p /logs
 
 WORKDIR /app
 
-RUN apt update && apt upgrade -y && apt clean 
+RUN apt update && apt upgrade -y && apt clean
 
 RUN pip install poetry
 
