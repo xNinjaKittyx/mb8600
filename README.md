@@ -20,7 +20,7 @@ Python3.8 (probably will work with 3.6+, but I'm only testing with 3.8+)
 
 ## Steps to run basic script
 ```
-git clone [this project]
+git clone https://github.com/xNinjaKittyx/mb8600.git
 cd mb8600
 poetry install
 
