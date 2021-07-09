@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.9-slim
 
 ENV INFLUX_HOST="localhost" \
     INFLUX_PORT=8086 \
@@ -12,22 +12,20 @@ ENV INFLUX_HOST="localhost" \
     LOG_LOCATION="/logs" \
     LOG_LEVEL=INFO
 
-RUN mkdir -p /logs
-
 WORKDIR /app
 
-RUN apt update && apt upgrade -y && apt clean
+RUN apt update && apt upgrade && apt clean && rm -rf /var/lib/apt/lists/* && pip install --no-cache-dir poetry && mkdir -p /logs
 
-RUN pip install poetry
 
-COPY pyproject.toml .
-COPY poetry.lock .
+COPY pyproject.toml poetry.lock ./
 COPY mb8600/ mb8600/
 
-RUN poetry install
+RUN poetry config virtualenvs.create false \
+    && poetry config experimental.new-installer false \
+    && poetry install --no-root --no-interaction --no-ansi \
+    && pip cache purge
 
-COPY data_export.py .
-COPY reboot.py .
+COPY data_export.py reboot.py get_data.py ./
 
 
 CMD ["/usr/local/bin/poetry", "run", "python", "data_export.py"]

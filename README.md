@@ -82,6 +82,7 @@ These are solely my observations - may not be actually true.
 - You can't make more than 1 request at a time, the modem's webserver only serves 1 request at a time.
 - I wouldn't suggest having any of this information exposed to the public network in any way unless you modify the script/library first. Mac Address is sensitive information and can have others attempt to steal your network provider.
 - Because of how slow the modem is sometimes, you will get `requests.exceptions.ChunkedEncodingError - InvalidChunkLength` once in a while. This can be safely ignored. You *might* be able to reduce this occurrance if you increase `SLEEP_TIMER`
+- I might be wrong, but I believe it's possible to be able to access the modem's HNAP on a different machine while you're running the data export without logging in. Just to be safe, I would recommend setting your firewall so that not all clients can access the modem's IP.
 
 
 ## Credits
