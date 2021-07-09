@@ -15,7 +15,14 @@ Still somewhat of a WIP - but it's usable. Not sure how far I'll go with this pr
 - I also had a curiosity if I could automate rebooting the modem.
 
 
-## Requirements for Easy Install
+## Run with GHCR Docker
+
+```
+docker run -it -e INFLUX_HOST=192.168.x.x ghcr.io/xninjakittyx/mb8600:main
+```
+
+
+## Install from Source
 
 Python3.8 (probably will work with 3.6+, but I'm only testing with 3.8+)
 - `poetry`
