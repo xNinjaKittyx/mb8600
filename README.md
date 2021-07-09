@@ -1,5 +1,7 @@
 # MB8600
 
+[![Docker](https://github.com/xNinjaKittyx/mb8600/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/xNinjaKittyx/mb8600/actions/workflows/docker-publish.yml)
+
 Somewhat of an all-in-one solution to monitoring your MB8600 and being able to script reboots.
 
 Still somewhat of a WIP - but it's usable. Not sure how far I'll go with this project.
