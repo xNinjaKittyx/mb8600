@@ -1,8 +1,8 @@
 # MB8600
 
 [![Docker](https://github.com/xNinjaKittyx/mb8600/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/xNinjaKittyx/mb8600/actions/workflows/docker-publish.yml)
-![version](https://img.shields.io/badge/version-0.0.1-blue)
-[[https://www.python.org/download][https://img.shields.io/badge/python-3.7+-blue.svg]]
+[![version](https://img.shields.io/badge/version-0.0.1-blue)]
+[![https://www.python.org/download](https://img.shields.io/badge/python-3.7+-blue.svg)]
 
 Somewhat of an all-in-one solution to monitoring your MB8600 and being able to script reboots.
 
