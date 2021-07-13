@@ -1,6 +1,8 @@
 # MB8600
 
 [![Docker](https://github.com/xNinjaKittyx/mb8600/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/xNinjaKittyx/mb8600/actions/workflows/docker-publish.yml)
+![version](https://img.shields.io/badge/version-0.0.1-blue)
+[[https://www.python.org/download][https://img.shields.io/badge/python-3.7+-blue.svg]]
 
 Somewhat of an all-in-one solution to monitoring your MB8600 and being able to script reboots.
 
@@ -24,10 +26,10 @@ docker run -it -e INFLUX_HOST=192.168.x.x ghcr.io/xninjakittyx/mb8600:main
 
 ## Install from Source
 
-Python3.8 (probably will work with 3.6+, but I'm only testing with 3.8+)
+Python3.7+ (probably will work with 3.6+, but I'm only testing with 3.9+)
 - `poetry`
 
-## Steps to run basic script
+### Steps to run basic script
 ```
 git clone https://github.com/xNinjaKittyx/mb8600.git
 cd mb8600
@@ -37,7 +39,7 @@ poetry install
 poetry run python test.py
 ```
 
-## Steps to run influxdb import
+### Steps to run influxdb import
 Assuming you ran the basic script already
 ```
 poetry run python data_export.py --host [influxdbhost] --db modem-test

@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+    modem-influx:
+        # image: ghcr.io/xninjakittyx/mb8600:main
+        build: .
+        restart: unless-stopped
+        depends_on:
+            - "influxdb"
+            - "grafana"
+        environment:
+            INFLUX_HOST: influxdb
+        networks:
+            internal:
+                ipv4_address: 172.20.0.2
+
+    influxdb:
+        # I haven't tested on 2.0+
+        image: influxdb:1.8
+        restart: unless-stopped
+        volumes:
+            - '/home/$USER/mb8600-influxdb/:/var/lib/influxdb'
+        networks:
+            internal:
+                ipv4_address: 172.20.0.3
+
+    grafana:
+        # I haven't tested on 2.0+
+        image: grafana/grafana:latest
+        restart: unless-stopped
+        volumes:
+            - '/home/$USER/mb8600-grafana/:/var/lib/influxdb'
+            - './grafana_provisioning:/etc/grafana/provisioning'
+        ports:
+            - 3000:3000
+        networks:
+            internal:
+                ipv4_address: 172.20.0.4
+
+networks:
+    internal:
+        ipam:
+            config:
+                - subnet: 172.20.0.0/24

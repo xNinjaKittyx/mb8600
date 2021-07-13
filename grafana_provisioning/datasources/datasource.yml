@@ -1,0 +1,12 @@
+apiVersion: 1
+
+datasources:
+  - name: modem-test
+    type: influxdb
+    access: proxy
+    url: http://172.20.0.3:8086
+    database: modem-test
+    editable: false
+    isDefault:
+    jsonData:
+      httpMode: GET

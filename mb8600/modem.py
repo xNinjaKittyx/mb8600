@@ -41,18 +41,18 @@ class MB8600:
         self.session.verify = verify
         self._cred_regex = re.compile("^[A-Za-z0-9]+$")
 
-    def _millis(self):
+    def _millis(self) -> int:
         return int(round(time.time() * 1000)) % 2000000000000
 
-    def _md5sum(self, key, data):
+    def _md5sum(self, key: str, data: str) -> str:
         hmc = hmac.new(key.encode("utf-8"), digestmod=hashlib.md5)
         hmc.update(data.encode("utf-8"))
         return hmc.hexdigest().upper()
 
-    def _hnap_auth(self, key, data):
+    def _hnap_auth(self, key: str, data: str) -> str:
         return f"{self._md5sum(key, data)} {self._millis()}"
 
-    def _run_hnap_command(self, action, params):
+    def _run_hnap_command(self, action: str, params: dict) -> dict:
         action_uri = f'"{SOAP_NAMESPACE}{action}"'
         private_key = self.session.cookies.get("PrivateKey", path="/", default="withoutloginkey")
 
