@@ -52,9 +52,19 @@ if __name__ == "__main__":
         # Invalid log level
         logger.error(f"Invalid loglevel {args.loglevel}")
 
+    tries = 0
+    while True:
+        try:
+            client.ping()
+            break
+        except Exception:
+            tries += 1
+            logger.exception(f'Failed to ping database - Trying again ({tries})')
+
     if args.fresh:
         client.drop_database(args.db)
     client.create_database(args.db)
+
 
     while True:
         logger.info("Starting Import")
