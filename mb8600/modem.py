@@ -129,7 +129,7 @@ class MB8600:
                     "ChannelID": value["ChannelID"],
 
                 },
-                "time": datetime.now().isoformat(),
+                "time": datetime.utcnow().isoformat(),
                 "fields": {
                     field_key: value[field_key] for field_key in value if field_key not in tags
                 }
@@ -143,7 +143,7 @@ class MB8600:
                     "Channel": value["Channel"],
                     "ChannelID": value["ChannelID"],
                 },
-                "time": datetime.now().isoformat(),
+                "time": datetime.utcnow().isoformat(),
                 "fields": {
                     field_key: value[field_key] for field_key in value if field_key not in tags
                 }
@@ -157,7 +157,7 @@ class MB8600:
                 "tags": {
                     "host": self.host,
                 },
-                "time": datetime.now().isoformat(),
+                "time": datetime.utcnow().isoformat(),
                 "fields": {
                     **data['GetMotoStatusSoftwareResponse'],
                     **data['GetHomeConnectionResponse'],
@@ -178,7 +178,7 @@ class MB8600:
                 "tags": {
                     "host": self.host,
                 },
-                "time": datetime.now().isoformat(),
+                "time": datetime.utcnow().isoformat(),
                 "fields": {
                     "uptime": timedelta(days=days, hours=hours, minutes=minutes, seconds=seconds).total_seconds()
                 }
