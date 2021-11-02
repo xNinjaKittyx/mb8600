@@ -6,6 +6,7 @@ import time
 import urllib3
 from logging.handlers import RotatingFileHandler
 
+import requests
 from influxdb import InfluxDBClient
 
 from mb8600.modem import MB8600
@@ -80,6 +81,9 @@ if __name__ == "__main__":
             with open ('data.json', 'w') as f:
                 f.write(json.dumps(data, indent=2))
             logger.info("Imported data")
+        except requests.exceptions.ConnectionError as e:
+            # This is a common error for connection failure. Report just the name of the exception to reduce log bloat.
+            logger.error(f"Exception raised: {e}")
         except Exception as e:
             logger.exception(f"Exception raised: {e}")
 
