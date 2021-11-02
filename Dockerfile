@@ -14,7 +14,7 @@ ENV INFLUX_HOST="localhost" \
 
 WORKDIR /app
 
-RUN apt update && apt upgrade && apt clean && rm -rf /var/lib/apt/lists/* && pip install --no-cache-dir poetry && mkdir -p /logs
+RUN apt update && apt upgrade -y && apt clean && rm -rf /var/lib/apt/lists/* && pip install --no-cache-dir poetry && mkdir -p /logs
 
 
 COPY pyproject.toml poetry.lock ./
