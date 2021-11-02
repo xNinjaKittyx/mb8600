@@ -1,4 +1,3 @@
-
 import hashlib
 import hmac
 import json
@@ -9,7 +8,6 @@ from datetime import datetime, timedelta
 from typing import Optional, Tuple
 
 import requests
-
 
 log = logging.getLogger(__name__)
 
@@ -30,8 +28,14 @@ GET_ACTIONS = [
 
 
 class MB8600:
-
-    def __init__(self, host: str, username: Optional[str] = None, password: Optional[str] = None, secure: bool = True, verify: bool = False):
+    def __init__(
+        self,
+        host: str,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        secure: bool = True,
+        verify: bool = False,
+    ):
 
         self.host = host
         self.username = username
@@ -91,9 +95,7 @@ class MB8600:
             },
         )
 
-        private_key = self._md5sum(
-            f"{response['PublicKey']}{password}", response["Challenge"]
-        )
+        private_key = self._md5sum(f"{response['PublicKey']}{password}", response["Challenge"])
 
         self.session.cookies.set("uid", response["Cookie"], path="/")
         self.session.cookies.set("PrivateKey", private_key, path="/")
@@ -110,7 +112,7 @@ class MB8600:
             },
         )
 
-        return response['LoginResult'] == 'OK'
+        return response["LoginResult"] == "OK"
 
     def get_influx_data(self) -> Tuple[dict, dict]:
         # Cleaned up to work with influxdb
@@ -118,62 +120,64 @@ class MB8600:
 
         influxdb_data = []
 
-        tags = ['Channel', 'ChannelID']
+        tags = ["Channel", "ChannelID"]
 
-        for value in data['GetMotoStatusDownstreamChannelInfoResponse']['MotoConnDownstreamChannel']:
-            influxdb_data.append({
-                "measurement": "downstream_channel",
-                "tags": {
-                    "host": self.host,
-                    "Channel": value["Channel"],
-                    "ChannelID": value["ChannelID"],
-
-                },
-                "time": datetime.utcnow().isoformat(),
-                "fields": {
-                    field_key: value[field_key] for field_key in value if field_key not in tags
+        for value in data["GetMotoStatusDownstreamChannelInfoResponse"]["MotoConnDownstreamChannel"]:
+            influxdb_data.append(
+                {
+                    "measurement": "downstream_channel",
+                    "tags": {
+                        "host": self.host,
+                        "Channel": value["Channel"],
+                        "ChannelID": value["ChannelID"],
+                    },
+                    "time": datetime.utcnow().isoformat(),
+                    "fields": {field_key: value[field_key] for field_key in value if field_key not in tags},
                 }
-            })
+            )
 
-        for value in data['GetMotoStatusUpstreamChannelInfoResponse']['MotoConnUpstreamChannel']:
-            influxdb_data.append({
-                "measurement": "upstream_channel",
-                "tags": {
-                    "host": self.host,
-                    "Channel": value["Channel"],
-                    "ChannelID": value["ChannelID"],
-                },
-                "time": datetime.utcnow().isoformat(),
-                "fields": {
-                    field_key: value[field_key] for field_key in value if field_key not in tags
+        for value in data["GetMotoStatusUpstreamChannelInfoResponse"]["MotoConnUpstreamChannel"]:
+            influxdb_data.append(
+                {
+                    "measurement": "upstream_channel",
+                    "tags": {
+                        "host": self.host,
+                        "Channel": value["Channel"],
+                        "ChannelID": value["ChannelID"],
+                    },
+                    "time": datetime.utcnow().isoformat(),
+                    "fields": {field_key: value[field_key] for field_key in value if field_key not in tags},
                 }
-            })
-
+            )
 
         # Just get all the modem info. Deal with it later.
 
-        influxdb_data.append({
+        influxdb_data.append(
+            {
                 "measurement": "modem_info",
                 "tags": {
                     "host": self.host,
                 },
                 "time": datetime.utcnow().isoformat(),
                 "fields": {
-                    **data['GetMotoStatusSoftwareResponse'],
-                    **data['GetHomeConnectionResponse'],
-                    **data['GetHomeAddressResponse'],
-                    **data['GetMotoLagStatusResponse'],
-                    **data['GetMotoStatusConnectionInfoResponse'],
-                    **data['GetMotoStatusStartupSequenceResponse'],
-                }
-        })
+                    **data["GetMotoStatusSoftwareResponse"],
+                    **data["GetHomeConnectionResponse"],
+                    **data["GetHomeAddressResponse"],
+                    **data["GetMotoLagStatusResponse"],
+                    **data["GetMotoStatusConnectionInfoResponse"],
+                    **data["GetMotoStatusStartupSequenceResponse"],
+                },
+            }
+        )
 
         # Calculate uptime in seconds
 
-        days, hours, minutes, seconds = [int(val) for val in re.findall(r'\d+', data['GetMotoStatusConnectionInfoResponse']['MotoConnSystemUpTime'])]
+        days, hours, minutes, seconds = (
+            int(val) for val in re.findall(r"\d+", data["GetMotoStatusConnectionInfoResponse"]["MotoConnSystemUpTime"])
+        )
 
-
-        influxdb_data.append({
+        influxdb_data.append(
+            {
                 "measurement": "uptime",
                 "tags": {
                     "host": self.host,
@@ -181,29 +185,36 @@ class MB8600:
                 "time": datetime.utcnow().isoformat(),
                 "fields": {
                     "uptime": timedelta(days=days, hours=hours, minutes=minutes, seconds=seconds).total_seconds()
-                }
-        })
+                },
+            }
+        )
 
         return influxdb_data, data
 
     def get_data(self) -> dict:
         data = self._run_hnap_command("GetMultipleHNAPs", {action: "" for action in GET_ACTIONS})
         # Clean up the data a bit
-        data['GetMotoStatusLogResponse']['MotoStatusLogList'] = data['GetMotoStatusLogResponse']['MotoStatusLogList'].split('}-{')
-        for i, value in enumerate(data['GetMotoStatusLogResponse']['MotoStatusLogList']):
-            new_value = value.split('^')
-            data['GetMotoStatusLogResponse']['MotoStatusLogList'][i] = {
+        data["GetMotoStatusLogResponse"]["MotoStatusLogList"] = data["GetMotoStatusLogResponse"][
+            "MotoStatusLogList"
+        ].split("}-{")
+        for i, value in enumerate(data["GetMotoStatusLogResponse"]["MotoStatusLogList"]):
+            new_value = value.split("^")
+            data["GetMotoStatusLogResponse"]["MotoStatusLogList"][i] = {
                 "Date": f"{new_value[0].strip()} {new_value[1].strip()}",
                 "Priority": new_value[2],
                 "Description": new_value[3],
             }
 
-        data['GetMotoStatusDownstreamChannelInfoResponse']['MotoConnDownstreamChannel'] = data['GetMotoStatusDownstreamChannelInfoResponse']['MotoConnDownstreamChannel'].split('|+|')
-        data['GetMotoStatusUpstreamChannelInfoResponse']['MotoConnUpstreamChannel'] = data['GetMotoStatusUpstreamChannelInfoResponse']['MotoConnUpstreamChannel'].split('|+|')
+        data["GetMotoStatusDownstreamChannelInfoResponse"]["MotoConnDownstreamChannel"] = data[
+            "GetMotoStatusDownstreamChannelInfoResponse"
+        ]["MotoConnDownstreamChannel"].split("|+|")
+        data["GetMotoStatusUpstreamChannelInfoResponse"]["MotoConnUpstreamChannel"] = data[
+            "GetMotoStatusUpstreamChannelInfoResponse"
+        ]["MotoConnUpstreamChannel"].split("|+|")
 
-        for i, value in enumerate(data['GetMotoStatusDownstreamChannelInfoResponse']['MotoConnDownstreamChannel']):
-            new_value = value.split('^')
-            data['GetMotoStatusDownstreamChannelInfoResponse']['MotoConnDownstreamChannel'][i] = {
+        for i, value in enumerate(data["GetMotoStatusDownstreamChannelInfoResponse"]["MotoConnDownstreamChannel"]):
+            new_value = value.split("^")
+            data["GetMotoStatusDownstreamChannelInfoResponse"]["MotoConnDownstreamChannel"][i] = {
                 "Channel": int(new_value[0].strip()),
                 "LockStatus": new_value[1].strip(),
                 "Modulation": new_value[2].strip(),
@@ -215,9 +226,9 @@ class MB8600:
                 "Uncorrected": int(new_value[8].strip()),
             }
 
-        for i, value in enumerate(data['GetMotoStatusUpstreamChannelInfoResponse']['MotoConnUpstreamChannel']):
-            new_value = value.split('^')
-            data['GetMotoStatusUpstreamChannelInfoResponse']['MotoConnUpstreamChannel'][i] = {
+        for i, value in enumerate(data["GetMotoStatusUpstreamChannelInfoResponse"]["MotoConnUpstreamChannel"]):
+            new_value = value.split("^")
+            data["GetMotoStatusUpstreamChannelInfoResponse"]["MotoConnUpstreamChannel"][i] = {
                 "Channel": int(new_value[0].strip()),
                 "LockStatus": new_value[1].strip(),
                 "ChannelType": new_value[2].strip(),
@@ -242,16 +253,16 @@ class MB8600:
 
     def _check_username_and_password(self, value: str) -> bool:
         """
-function CheckUsernameAndPassword(value)
-{
-    var temp = new RegExp("^[A-Za-z0-9]+$");
+        function CheckUsernameAndPassword(value)
+        {
+            var temp = new RegExp("^[A-Za-z0-9]+$");
 
-    if (((value.length!=0) && (!temp.test(value))) || (value.length==0))
-    {
-        return false;
-    }
-    return true;
-}
+            if (((value.length!=0) && (!temp.test(value))) || (value.length==0))
+            {
+                return false;
+            }
+            return true;
+        }
         """
         if len(value):
             return bool(self._cred_regex.fullmatch(value))
@@ -266,7 +277,7 @@ function CheckUsernameAndPassword(value)
     def change_credentials(self, username: str, password: str, new_username: str, new_password: str) -> dict:
         # Please be careful using this command - Can only be used after Login
 
-        response = self._run_hnap_command(
+        _ = self._run_hnap_command(
             "SetStatusSecuritySettings",
             {
                 "MotoStatusSecurityAction": "3",
