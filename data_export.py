@@ -37,7 +37,7 @@ parser.add_argument("--db", default=os.getenv("INFLUX_DB", "modem-test"), help="
 parser.add_argument("--fresh", action="store_true", default=False, help="Recreate the influx database.")
 parser.add_argument(
     "--sleep",
-    default=os.getenv("SLEEP_TIMER", 30),
+    default=os.getenv("SLEEP_TIMER", 60),
     type=int,
     help="Time to sleep between data fetching. Recommended to be 30 or higher. (Most likely can't do less than 15)",
 )
@@ -51,6 +51,26 @@ parser.add_argument("--loglevel", default=os.getenv("LOG_LEVEL", "INFO").upper()
 args = parser.parse_args()
 
 
+def ping_influxdb(client):
+    tries = 0
+    while True:
+        try:
+            client.ping()
+            return
+        except Exception:
+            tries += 1
+            logger.exception(f"Failed to ping database - Trying again ({tries})")
+            time.sleep(1)
+
+
+def create_or_use_database(client, db_name):
+    for database in client.query("SHOW DATABASES").get_points():
+        if database["name"] == db_name:
+            return
+
+    client.create_database(db_name)
+
+
 if __name__ == "__main__":
     my_modem = MB8600(args.mhost, args.muser, args.mpw)
     client = InfluxDBClient(args.host, args.port, args.user, args.pw, args.db)
@@ -61,20 +81,15 @@ if __name__ == "__main__":
         # Invalid log level
         logger.error(f"Invalid loglevel {args.loglevel}")
 
-    tries = 0
-    while True:
-        try:
-            client.ping()
-            break
-        except Exception:
-            tries += 1
-            logger.exception(f"Failed to ping database - Trying again ({tries})")
-
+    ping_influxdb(client)
+    # We don't expect anyone to be running with this flag unless it's ran manually.
     if args.fresh:
         client.drop_database(args.db)
-    client.create_database(args.db)
+    create_or_use_database(client, args.db)
 
     while True:
+        # Don't start collecting anything if influxdb is down.
+        ping_influxdb(client)
         logger.info("Starting Import")
         start_time = time.time()
 
