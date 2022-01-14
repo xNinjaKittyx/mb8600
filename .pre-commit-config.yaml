@@ -1,7 +1,7 @@
 default_stages: [commit, push]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.1.0
     hooks:
     - id: check-json
     - id: check-toml
@@ -11,22 +11,22 @@ repos:
     - id: pretty-format-json
       args: ["--autofix", "--no-sort-keys"]
   - repo: https://github.com/ambv/black
-    rev: 21.9b0
+    rev: 21.12b0
     hooks:
     - id: black
       args: ["-l 120"]
   - repo: https://github.com/pycqa/isort
-    rev: 5.9.3
+    rev: 5.10.1
     hooks:
       - id: isort
         args: ["--profile", "black"]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.29.0
+    rev: v2.31.0
     hooks:
     - id: pyupgrade
       args: ["--py38-plus"]
-  - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.9.2
+  - repo: https://github.com/PyCQA/flake8
+    rev: 4.0.1
     hooks:
     - id: flake8
   # - repo: https://github.com/pre-commit/mirrors-mypy
