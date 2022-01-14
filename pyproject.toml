@@ -5,8 +5,8 @@ description = ""
 authors = ["xNinjaKittyx <xNinjaKittyx@users.noreply.github.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
-requests = "^2.25.1"
+python = ">=3.8"
+requests = "^2.27.1"
 influxdb = "^5.3.1"
 
 [tool.poetry.dev-dependencies]
