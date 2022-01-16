@@ -26,7 +26,7 @@ docker run -it -e INFLUX_HOST=192.168.x.x ghcr.io/xninjakittyx/mb8600:main
 
 ## Install from Source
 
-Python3.10+ (probably will work with 3.6+, but I'm only testing with 3.10+)
+Python3.10+ (It may work with 3.8+, but it's not guaranteed to work.)
 - `poetry`
 
 ### Steps to run basic script
