@@ -1,8 +1,8 @@
 # MB8600
 
 [![Docker](https://github.com/xNinjaKittyx/mb8600/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/xNinjaKittyx/mb8600/actions/workflows/docker-publish.yml)
-![version](https://img.shields.io/badge/version-0.0.1-blue)
-![https://www.python.org/download](https://img.shields.io/badge/python-3.7+-blue.svg)
+![version](https://img.shields.io/badge/version-0.0.4-blue)
+![https://www.python.org/download](https://img.shields.io/badge/python-3.10+-blue.svg)
 
 Somewhat of an all-in-one solution to monitoring your MB8600 and being able to script reboots.
 
@@ -26,7 +26,7 @@ docker run -it -e INFLUX_HOST=192.168.x.x ghcr.io/xninjakittyx/mb8600:main
 
 ## Install from Source
 
-Python3.7+ (probably will work with 3.6+, but I'm only testing with 3.9+)
+Python3.10+ (probably will work with 3.6+, but I'm only testing with 3.10+)
 - `poetry`
 
 ### Steps to run basic script
